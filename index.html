@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./content/series.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    html,body{margin:0;padding:0;background:#15140F;}
+    *{box-sizing:border-box;}
+    ::selection{background:#EDE8DD;color:#15140F;}
+  </style>
+</helmet>
+<div style="min-height:100vh;background:{{ bg }};color:{{ ink }};font-family:'Hanken Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding:30px clamp(20px,5vw,64px) 64px;">
+
+  <header style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding-bottom:clamp(36px,5vw,56px);">
+    <button onClick="{{ goHome }}" aria-label="Home" style="background:none;border:none;padding:0;margin:0;cursor:pointer;color:inherit;font-family:inherit;font-size:clamp(17px,2.2vw,22px);font-weight:600;letter-spacing:.18em;text-transform:uppercase;line-height:1;">CHUNG&nbsp;HANJUN</button>
+    <nav style="display:flex;align-items:center;gap:26px;">
+      <a href="{{ igUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style="display:flex;color:inherit;line-height:0;">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <rect x="3" y="3" width="18" height="18" rx="5.2"></rect>
+          <circle cx="12" cy="12" r="4.1"></circle>
+          <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"></circle>
+        </svg>
+      </a>
+    </nav>
+  </header>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <main>
+      <div style="display:flex;align-items:baseline;gap:12px;padding-bottom:clamp(26px,3.2vw,44px);font-size:clamp(20px,2.6vw,28px);font-weight:600;letter-spacing:-0.01em;line-height:1;flex-wrap:wrap;">Main</div>
+      <div style="columns:3 300px;column-gap:clamp(20px,2.4vw,38px);">
+      <sc-for list="{{ series }}" as="s" hint-placeholder-count="0">
+        <div onClick="{{ s.onCardClick }}" style="break-inside:avoid;margin:0 0 clamp(30px,3.4vw,48px);cursor:pointer;">
+          {{ s.img }}
+          <div style="display:flex;align-items:baseline;gap:9px;padding-top:13px;">
+            <span style="font-size:15px;font-weight:500;letter-spacing:.005em;">{{ s.name }}</span>
+            <span style="font-size:15px;font-weight:500;letter-spacing:.02em;color:inherit;">{{ s.year }}</span>
+          </div>
+        </div>
+      </sc-for>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isSeries }}" hint-placeholder-val="{{ true }}">
+    <main>
+      <div style="display:flex;align-items:baseline;gap:12px;padding-bottom:clamp(26px,3.2vw,44px);font-size:clamp(20px,2.6vw,28px);font-weight:600;letter-spacing:-0.01em;line-height:1;flex-wrap:wrap;">
+        <button onClick="{{ goHome }}" style="background:none;border:none;padding:0;margin:0;cursor:pointer;font-family:inherit;font-size:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit;color:#9B968B;">Main</button>
+        <span style="color:#C9C4B8;font-weight:400;">/</span>
+        <span style="white-space:nowrap;">{{ currentName }} {{ currentYear }}</span>
+      </div>
+      <div style="columns:3 300px;column-gap:clamp(20px,2.4vw,38px);">
+        <sc-for list="{{ currentPhotos }}" as="p" hint-placeholder-count="0">
+          <div onClick="{{ p.onClick }}" style="break-inside:avoid;margin:0 0 clamp(20px,2.4vw,38px);cursor:pointer;">
+            {{ p.img }}
+          </div>
+        </sc-for>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isPhoto }}" hint-placeholder-val="{{ true }}">
+    <main>
+      <div style="display:flex;align-items:baseline;gap:12px;padding-bottom:clamp(26px,3.2vw,44px);font-size:clamp(20px,2.6vw,28px);font-weight:600;letter-spacing:-0.01em;line-height:1;flex-wrap:wrap;">
+        <button onClick="{{ goHome }}" style="background:none;border:none;padding:0;margin:0;cursor:pointer;font-family:inherit;font-size:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit;color:#9B968B;">Main</button>
+        <span style="color:#C9C4B8;font-weight:400;">/</span>
+        <button onClick="{{ backToSeries }}" style="background:none;border:none;padding:0;margin:0;cursor:pointer;font-family:inherit;font-size:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit;color:#9B968B;white-space:nowrap;">{{ currentName }} {{ currentYear }}</button>
+        <span style="color:#C9C4B8;font-weight:400;">/</span>
+        <span style="white-space:nowrap;">{{ detailCrumb }}</span>
+      </div>
+      <div style="display:flex;gap:clamp(24px,4vw,60px);align-items:flex-start;flex-wrap:wrap;">
+        <div style="flex:1 1 440px;min-width:0;display:flex;justify-content:center;">
+          {{ detailImg }}
+        </div>
+        <aside style="flex:0 0 clamp(220px,26vw,300px);width:100%;max-width:340px;">
+          <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#9B968B;padding-bottom:6px;">Metadata</div>
+          <div style="font-size:17px;font-weight:600;letter-spacing:-0.01em;padding-bottom:18px;">{{ detailLabel }}</div>
+          <sc-if value="{{ detailHasMeta }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <sc-for list="{{ detailMeta }}" as="row" hint-placeholder-count="5">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding:11px 0;border-top:1px solid rgba(140,135,125,0.28);">
+                  <span style="font-size:13px;color:#9B968B;letter-spacing:.03em;min-width:0;">{{ row.k }}</span>
+                  <span style="font-size:14px;font-weight:500;text-align:right;white-space:nowrap;flex-shrink:0;">{{ row.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ detailNoMeta }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size:13px;color:#9B968B;line-height:1.65;border-top:1px solid rgba(140,135,125,0.28);padding-top:14px;">No EXIF metadata found. Drop an original JPEG straight from the camera to read camera, lens, shutter and ISO.</div>
+          </sc-if>
+        </aside>
+      </div>
+    </main>
+  </sc-if>
+
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;bg&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#15140f&quot;,&quot;options&quot;:[&quot;#F4F2EC&quot;,&quot;#ECECEA&quot;,&quot;#EDE7DA&quot;,&quot;#15140F&quot;]},&quot;ink&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ede8dd&quot;,&quot;options&quot;:[&quot;#1F1B16&quot;,&quot;#1A1A1A&quot;,&quot;#3A3A38&quot;,&quot;#EDE8DD&quot;]}}">
+class Component extends DCLogic {
+  constructor(...args) {
+    super(...args);
+    // 시리즈 목록은 content/series.js (window.PORTFOLIO_SERIES) 에서 읽어옵니다.
+    // 이 파일(index.html)은 디자인과 동작만 담당하며, 사진/시리즈 정보는 거기서만 수정합니다.
+    this.seriesList = this.buildSeriesList();
+    let v = 'home';
+    try { v = localStorage.getItem('rs_view') || 'home'; } catch (e) {}
+    if (v !== 'home' && !this.seriesList.some((s) => s.id === v)) v = 'home';
+    this.state = { view: v, photo: null };
+  }
+
+  warn(msg) { try { console.warn('[포트폴리오] ' + msg); } catch (e) {} }
+
+  // series.js 의 원본 데이터를 화면용 데이터로 변환하고, 흔한 실수는 콘솔(F12)에 안내합니다.
+  buildSeriesList() {
+    const raw = window.PORTFOLIO_SERIES;
+    if (!Array.isArray(raw)) {
+      try { console.error('[포트폴리오] content/series.js 를 불러오지 못했습니다. 파일 위치와 문법(쉼표, 따옴표, 괄호)을 확인하세요.'); } catch (e) {}
+      return [];
+    }
+    const seen = {};
+    const out = [];
+    raw.forEach((s, i) => {
+      if (!s || typeof s !== 'object' || !s.id) { this.warn('series.js 의 ' + (i + 1) + '번째 항목에 id 가 없어 건너뜁니다.'); return; }
+      const id = String(s.id);
+      if (seen[id]) { this.warn('id "' + id + '" 가 중복되어 두 번째 항목을 건너뜁니다.'); return; }
+      seen[id] = true;
+      if (s.show === false) return;
+      const urlOf = (f) => {
+        f = String(f);
+        // 폴더 표시(/)가 없는 파일 이름은 photos/<id>/ 안에 있다고 봅니다.
+        return (/^(https?:)?\/\//.test(f) || /^data:/.test(f) || f.indexOf('/') >= 0) ? f : 'photos/' + id + '/' + f;
+      };
+      const title = s.title || id;
+      const year = s.year || '';
+      const photos = (Array.isArray(s.photos) ? s.photos : []).map((p, n) => {
+        const o = (p && typeof p === 'object') ? p : { file: p };
+        if (!o.file) { this.warn('"' + id + '" 시리즈의 ' + (n + 1) + '번째 사진에 file 이 없습니다.'); return null; }
+        return {
+          id: id + '-' + (n + 1),
+          label: title + ' ' + year + ' — ' + (n + 1),
+          url: urlOf(o.file),
+          meta: (o.meta && typeof o.meta === 'object') ? o.meta : null,
+        };
+      }).filter(Boolean);
+      if (s.cover && typeof s.cover === 'object') s.cover = s.cover.file; // cover 를 { file: "..." } 형태로 써도 허용
+      if (!s.cover) this.warn('"' + id + '" 시리즈에 cover(대표 사진)가 없어 메인 화면에 표시되지 않습니다.');
+      out.push({ id, name: title, year, coverUrl: s.cover ? urlOf(s.cover) : '', photos });
+    });
+    return out;
+  }
+
+  openPhoto(id) { this.setState({ photo: id }); try { window.scrollTo(0, 0); } catch (e) {} }
+  closePhoto() { this.setState({ photo: null }); try { window.scrollTo(0, 0); } catch (e) {} }
+
+  go(v) {
+    try { localStorage.setItem('rs_view', v); } catch (e) {}
+    this.setState({ view: v, photo: null });
+    try { window.scrollTo(0, 0); } catch (e) {}
+  }
+
+  renderVals() {
+    const view = this.state.view;
+    const photoId = this.state.photo;
+    const seriesList = this.seriesList;
+    const current = seriesList.find((s) => s.id === view) || null;
+    const detailPhoto = (photoId && current) ? (current.photos.find((p) => p.id === photoId) || null) : null;
+    const inPhoto = !!detailPhoto;
+    const isHome = view === 'home' && !inPhoto;
+    const isSeries = !!current && !inPhoto;
+
+    // 사진 파일을 찾지 못하면 그 칸을 숨기고 콘솔(F12)에 어떤 경로가 문제인지 알려줍니다.
+    const mkImg = (url, alt, style) => React.createElement('img', {
+      src: url, alt: alt || '', style: style,
+      onError: (e) => {
+        this.warn('이미지를 불러오지 못했습니다: ' + url + '  → 파일 이름(대소문자 포함)과 폴더 위치를 확인하세요.');
+        const t = e && e.target;
+        if (t && t.parentElement) t.parentElement.style.display = 'none';
+      },
+    });
+    const gridImgStyle = { display: 'block', width: '100%', height: 'auto', background: '#E7E4DC' };
+
+    const series = seriesList.filter((s) => s.coverUrl).map((s) => ({
+      id: s.id, name: s.name, year: s.year,
+      img: mkImg(s.coverUrl, s.name, gridImgStyle),
+      onCardClick: () => this.go(s.id),
+    }));
+
+    const currentPhotos = current ? current.photos.map((p) => ({
+      id: p.id, label: p.label,
+      img: mkImg(p.url, p.label, gridImgStyle),
+      onClick: () => this.openPhoto(p.id),
+    })) : [];
+
+    const detailIdx = detailPhoto ? String(detailPhoto.id).split('-').pop() : '';
+    const detailCrumb = detailPhoto ? (current.name + (current.year ? ' ' + current.year : '') + '-' + detailIdx) : '';
+    const dm = detailPhoto ? detailPhoto.meta : null;
+    const detailMeta = [];
+    if (dm) {
+      if (dm.camera) detailMeta.push({ k: 'Camera', v: dm.camera });
+      if (dm.lens) detailMeta.push({ k: 'Lens', v: dm.lens });
+      if (dm.focal) detailMeta.push({ k: 'Focal length', v: dm.focal });
+      if (dm.aperture) detailMeta.push({ k: 'Aperture', v: dm.aperture });
+      if (dm.shutter) detailMeta.push({ k: 'Shutter', v: dm.shutter });
+      if (dm.iso) detailMeta.push({ k: 'ISO', v: dm.iso });
+      if (dm.date) detailMeta.push({ k: 'Date', v: dm.date });
+    }
+    const detailHasMeta = detailMeta.length > 0;
+    const detailImg = detailPhoto
+      ? mkImg(detailPhoto.url, detailPhoto.label, { display: 'block', maxWidth: '100%', maxHeight: 'min(74vh,780px)', width: 'auto', height: 'auto' })
+      : null;
+
+    return {
+      bg: this.props.bg ?? '#15140F',
+      ink: this.props.ink ?? '#EDE8DD',
+      igUrl: 'https://www.instagram.com/chnghnjn/',
+      isHome,
+      isSeries,
+      isPhoto: inPhoto,
+      series,
+      currentName: current ? current.name : '',
+      currentYear: current ? current.year : '',
+      currentPhotos,
+      detailImg,
+      detailLabel: detailPhoto ? detailPhoto.label : '',
+      detailCrumb,
+      detailMeta,
+      detailHasMeta,
+      detailNoMeta: !detailHasMeta,
+      backToSeries: () => this.closePhoto(),
+      goHome: () => this.go('home'),
+    };
+  }
+}
+</script>
+</body>
+</html>
