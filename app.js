@@ -36,7 +36,7 @@
       photos.forEach(function (p, n) { p.label = title + (year ? ' ' + year : '') + ' — ' + (n + 1); });
       var cover = fileOf(s.cover);        
       var hero = fileOf(s.hero) || cover; 
-      if (!hero) warn('"' + id + ';
+      if (!hero) warn('"' + id + '" 시리즈에 hero/cover(대표 사진)가 없어 …');
       out.push({ id: id, name: title, year: year, heroUrl: hero ? urlOf(hero) : '', photos: photos });
     });
     return out;
