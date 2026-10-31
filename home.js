@@ -2,8 +2,8 @@
 (function () {
   'use strict';
 
-  var DEFAULT_BG = '#15140F';   // index.html 의 기본 배경색
-  var DEFAULT_INK = '#EDE8DD';  // index.html 의 기본 글자색
+  var DEFAULT_BG = '#15140F';   
+  var DEFAULT_INK = '#EDE8DD'; 
 
  
   var CSS = [
@@ -130,7 +130,7 @@
       if (id === lastHash) return;
       var first = lastHash === '';
       lastHash = id;
-      if (first && !opts.startId) return;      // 처음 진입 때는 주소를 건드리지 않음
+      if (first && !opts.startId) return;     
       try { history.replaceState(history.state, '', '#' + id); } catch (e) {}
     }
 
@@ -167,7 +167,7 @@
       if (key === 'ArrowDown' || key === 'PageDown') delta = 1;
       else if (key === 'ArrowUp' || key === 'PageUp') delta = -1;
       else if (key === ' ' || key === 'Spacebar') {
-        if (/^(BUTTON|A)$/.test(tag)) return;   // 버튼/링크 위의 Space 는 원래 동작(누르기)
+        if (/^(BUTTON|A)$/.test(tag)) return;   
         delta = e.shiftKey ? -1 : 1;
       } else if (key === 'Home') abs = 0;
       else if (key === 'End') abs = N - 1;
