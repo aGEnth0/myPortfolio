@@ -1,13 +1,4 @@
-/* ==========================================================================
-   포트폴리오 앱: 상단 헤더 + 화면 이동(메인 → 시리즈 → 사진 상세) + 뒤로가기
-   --------------------------------------------------------------------------
-   · 주소 규칙:  메인  #시리즈id   |  시리즈  #s/시리즈id   |  사진  #s/시리즈id/번호
-   · 메인에서 시리즈를 열면 "한 칸", 시리즈에서 사진을 열면 "한 칸" 기록이 쌓여서
-     브라우저 뒤로가기가 사진 → 시리즈 → 메인 순서로 한 단계씩 돌아갑니다.
-   · 사진 상세에서 좌우 화살표로 사진을 넘길 때는 기록을 쌓지 않고 주소만 바꿉니다
-     (뒤로가기 한 번이면 시리즈로 돌아옴).
-   · 시리즈 / 사진 정보는 content/series.js 에서만 수정합니다. 이 파일은 보통 수정할 필요가 없습니다.
-   ========================================================================== */
+
 (function () {
   'use strict';
 
@@ -16,7 +7,7 @@
 
   function warn(msg) { try { console.warn('[포트폴리오] ' + msg); } catch (e) {} }
 
-  /* ---------- series.js 의 원본 데이터를 화면용으로 변환 ---------- */
+ 
   function normalize(raw) {
     if (!Array.isArray(raw)) {
       try { console.error('[포트폴리오] content/series.js 를 불러오지 못했습니다. 파일 위치와 문법(쉼표, 따옴표, 괄호)을 확인하세요.'); } catch (e) {}
@@ -31,7 +22,7 @@
       if (s.show === false) return;
       var urlOf = function (f) {
         f = String(f);
-        // 폴더 표시(/)가 없는 파일 이름은 photos/<id>/ 안에 있다고 봅니다.
+        
         return (/^(https?:)?\/\//.test(f) || /^data:/.test(f) || f.indexOf('/') >= 0) ? f : 'photos/' + id + '/' + f;
       };
       var title = s.title || id;
@@ -43,9 +34,9 @@
         return { url: urlOf(o.file), meta: (o.meta && typeof o.meta === 'object') ? o.meta : null };
       }).filter(Boolean);
       photos.forEach(function (p, n) { p.label = title + (year ? ' ' + year : '') + ' — ' + (n + 1); });
-      var cover = fileOf(s.cover);        // cover 를 { file: "..." } 형태로 써도 허용
-      var hero = fileOf(s.hero) || cover; // 홈 화면의 큰 사진. hero 가 없으면 cover 를 사용
-      if (!hero) warn('"' + id + '" 시리즈에 hero/cover(대표 사진)가 없어 메인 화면에 표시되지 않습니다.');
+      var cover = fileOf(s.cover);        
+      var hero = fileOf(s.hero) || cover; 
+      if (!hero) warn('"' + id + ';
       out.push({ id: id, name: title, year: year, heroUrl: hero ? urlOf(hero) : '', photos: photos });
     });
     return out;
@@ -56,10 +47,10 @@
     '.pa-root{--pa-top:calc(30px + max(21px,clamp(17px,2.2vw,22px)) + clamp(36px,5vw,56px));min-height:100vh;-webkit-font-smoothing:antialiased;font-family:\'Hanken Grotesk\',system-ui,sans-serif;}',
     '.pa-root *{box-sizing:border-box;}',
     '.pa-header{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:30px clamp(20px,5vw,64px) 0;}',
-    // 시리즈/사진 화면에서는 브라우저 스크롤바를 숨깁니다 (스크롤 자체는 그대로 동작). 메인 화면과 통일.
+    
     'html.pa-hide-sb{scrollbar-width:none;-ms-overflow-style:none;}',
     'html.pa-hide-sb::-webkit-scrollbar{display:none;width:0;height:0;}',
-    // 클릭 범위: 글자 둘레 14px/22px 를 눌러도 반응하도록 padding 으로 넓히고, 같은 크기의 음수 margin 으로 겹쳐서 화면 배치는 그대로 둡니다.
+
     '.pa-logo{background:none;border:none;padding:14px 22px;margin:-14px -22px;cursor:pointer;color:inherit;font-family:inherit;font-size:clamp(17px,2.2vw,22px);font-weight:600;letter-spacing:.18em;text-transform:uppercase;line-height:1;}',
     '.pa-logo span{text-decoration:underline;text-decoration-color:transparent;text-decoration-thickness:2px;text-underline-offset:7px;transition:text-decoration-color .18s ease;}',
     '.pa-logo:hover span,.pa-logo:focus-visible span{text-decoration-color:currentColor;}',
@@ -81,7 +72,7 @@
     document.head.appendChild(st);
   }
 
-  /* ---------- 주소 <-> 화면 ---------- */
+
   function hashText() {
     try { return decodeURIComponent((location.hash || '').replace(/^#/, '')); } catch (e) { return ''; }
   }
@@ -102,7 +93,7 @@
     var oldRestoration = null;
     try { oldRestoration = history.scrollRestoration; history.scrollRestoration = 'manual'; } catch (e) {}
 
-    /* --- 기본 골격 --- */
+
     var root = document.createElement('div');
     root.className = 'pa-root';
     root.style.cssText = 'background:' + bg + ';color:' + ink + ';';
@@ -126,11 +117,11 @@
     root.appendChild(header); root.appendChild(homeHost); root.appendChild(main);
     host.appendChild(root);
 
-    /* --- 상태 --- */
-    var cur = null;            // 지금 화면 { view, id, n }
+    
+    var cur = null;            
     var homeView = null, seriesView = null, photoView = null;
-    var lastHomeId = '';       // 메인으로 돌아올 때 시작할 시리즈
-    var depth = 0;             // 메인에서 몇 단계 들어와 있는지 (0 메인, 1 시리즈, 2 사진)
+    var lastHomeId = '';      
+    var depth = 0;            
     var destroyed = false;
 
     function stateOf(r, extra) {
@@ -139,7 +130,7 @@
       return s;
     }
 
-    // 주소/기록 상태 → 화면 정보
+   
     function routeFrom(st) {
       var r = null;
       if (st && st.rs) r = { view: st.view, id: st.id, n: st.n, scrollY: st.scrollY || 0 };
@@ -170,7 +161,7 @@
       if (photoView) { try { photoView.destroy(); } catch (e) {} photoView = null; }
     }
 
-    /* --- 화면 이동 --- */
+   
     function openSeries(id) {
       var from = history.state && history.state.rs ? history.state : null;
       if (cur && cur.view === 'home' && homeView && homeView.index() >= 0) lastHomeId = homeItems[homeView.index()] || lastHomeId;
@@ -234,7 +225,7 @@
       var same = cur && cur.view === r.view && cur.id === r.id;
       depth = r.view === 'home' ? 0 : (r.view === 'series' ? 1 : 2);
 
-      if (same && r.view === 'photo' && photoView) {           // 같은 시리즈 안에서 사진만 바뀜
+      if (same && r.view === 'photo' && photoView) {         
         photoView.setIndex(r.n - 1);
         cur = { view: 'photo', id: r.id, n: r.n };
         return;
@@ -275,10 +266,10 @@
       }
     }
 
-    /* --- 브라우저 뒤로/앞으로 --- */
+   
     function onPop(e) {
       var r = routeFrom(e.state);
-      if (!(e.state && e.state.rs)) {          // 주소창에서 직접 바꾼 경우: 상태를 새로 붙임
+      if (!(e.state && e.state.rs)) {         
         try { history.replaceState(stateOf(r), '', hrefOf(r)); } catch (err) {}
       }
       apply(r);
@@ -287,10 +278,10 @@
 
     logo.addEventListener('click', goHome);
 
-    /* --- 처음 진입 --- */
+   
     var first = routeFrom(history.state);
     if (!(history.state && history.state.rs)) {
-      // 새로 연 주소가 시리즈/사진이면, 뒤로가기가 사진 → 시리즈 → 메인 순서가 되도록 기록을 쌓아 둠
+     
       if (first.view === 'home') {
         try { history.replaceState(stateOf(first), '', hrefOf(first)); } catch (e) {}
       } else {
