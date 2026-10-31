@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./content/series.js"></script>
+<script src="./home.js"></script>
+<script src="./views.js"></script>
+<script src="./app.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    html,body{margin:0;padding:0;background:#15140F;}
+    *{box-sizing:border-box;}
+    ::selection{background:#EDE8DD;color:#15140F;}
+  </style>
+</helmet>
+<div style="min-height:100vh;background:{{ bg }};color:{{ ink }};">{{ appHost }}</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;bg&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#15140f&quot;,&quot;options&quot;:[&quot;#F4F2EC&quot;,&quot;#ECECEA&quot;,&quot;#EDE7DA&quot;,&quot;#15140F&quot;]},&quot;ink&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ede8dd&quot;,&quot;options&quot;:[&quot;#1F1B16&quot;,&quot;#1A1A1A&quot;,&quot;#3A3A38&quot;,&quot;#EDE8DD&quot;]}}">
+class Component extends DCLogic {
+  // 화면 전체(헤더, 메인, 시리즈, 사진 상세, 뒤로가기)는 app.js / home.js / views.js 가 그립니다.
+  // 이 파일(index.html)은 그 앱을 화면에 붙여 주는 얇은 껍데기이며, 보통 수정할 필요가 없습니다.
+  // 시리즈와 사진 정보는 content/series.js 에서만 수정합니다.
+  constructor(...args) {
+    super(...args);
+    this._app = null;
+    // 앱은 React 밖에서 그려지므로, 빈 칸(host)이 화면에 붙고 떨어질 때 만들고 지웁니다.
+    this._hostRef = (el) => {
+      if (this._app) { try { this._app.destroy(); } catch (e) {} this._app = null; }
+      if (el) this.mountApp(el);
+    };
+  }
+
+  componentWillUnmount() {
+    if (this._app) { try { this._app.destroy(); } catch (e) {} this._app = null; }
+  }
+
+  mountApp(el) {
+    try {
+      if (!window.PortfolioApp || !window.PortfolioViews) throw new Error('app.js / views.js 를 불러오지 못했습니다. 파일이 index.html 과 같은 폴더에 있는지 확인하세요.');
+      this._app = window.PortfolioApp.start(el, { bg: this.props.bg ?? '#15140F', ink: this.props.ink ?? '#EDE8DD' });
+    } catch (e) {
+      try { console.error('[포트폴리오] ' + e.message); } catch (e2) {}
+      el.textContent = '페이지를 불러오지 못했습니다. (F12 → Console 확인)';
+    }
+  }
+
+  renderVals() {
+    return {
+      bg: this.props.bg ?? '#15140F',
+      ink: this.props.ink ?? '#EDE8DD',
+      appHost: React.createElement('div', { ref: this._hostRef }),
+    };
+  }
+}
+</script>
+</body>
+</html>
