@@ -1,20 +1,11 @@
-/* ==========================================================================
-   홈 화면: 풀스크린 시리즈 세션
-   --------------------------------------------------------------------------
-   · 시리즈 하나 = 화면 하나(100dvh). 스크롤하면 scroll-snap 으로 한 장씩 넘어갑니다.
-   · 배경과 글자색은 사이트 기본 색(index.html 의 bg, ink)을 그대로 씁니다.
-   · 이 파일은 index.html 이 불러 쓰며, 보통 수정할 필요가 없습니다.
-     (시리즈 이름·색·사진은 content/series.js 에서 관리)
 
-   사용: window.PortfolioHome.create(hostElement, { series, startId, onOpen, bg, ink })
-   ========================================================================== */
 (function () {
   'use strict';
 
   var DEFAULT_BG = '#15140F';   // index.html 의 기본 배경색
   var DEFAULT_INK = '#EDE8DD';  // index.html 의 기본 글자색
 
-  /* ---------- 스타일 (한 번만 삽입) ---------- */
+ 
   var CSS = [
     '.ph-bg{position:fixed;inset:0;z-index:0;}',
     '.ph-scroller{position:fixed;inset:0;z-index:1;overflow-x:hidden;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:pointer;}',
@@ -29,7 +20,7 @@
     '.ph-view{background:none;border:none;padding:6px 0;margin:0;font:inherit;font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:inherit;cursor:pointer;white-space:nowrap;border-bottom:1px solid transparent;}',
     '.ph-view:hover,.ph-view:focus-visible{border-bottom-color:currentColor;outline:none;}',
     '.ph-view:focus-visible{outline:2px solid currentColor;outline-offset:3px;}',
-    /* 진행 표시: 사진 상세의 선 + 굵은 막대와 같은 모양 (세로). 오른쪽 여백 한가운데 */
+   
     '.ph-track{position:fixed;z-index:3;top:50%;transform:translateY(-50%);right:calc(clamp(20px,5vw,64px) / 2 - 1.5px);width:3px;height:min(240px,38vh);pointer-events:none;}',
     '.ph-track::before{content:"";position:absolute;top:0;bottom:0;left:1px;width:1px;background:currentColor;opacity:.35;}',
     '.ph-thumb{position:absolute;left:0;width:3px;background:currentColor;}',
@@ -60,7 +51,7 @@
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
-  /* ---------- 본체 ---------- */
+ 
   function create(host, opts) {
     opts = opts || {};
     var series = (opts.series || []).map(function (s, i) {
@@ -117,7 +108,7 @@
     var prevOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = 'hidden';
 
-    /* ----- 상태 ----- */
+    
     var active = -1, raf = 0, lastNav = 0, navTarget = 0, destroyed = false;
     var lastHash = '';
 
@@ -158,7 +149,7 @@
     }
     function current() { return Date.now() - lastNav < 700 ? navTarget : Math.round(scroller.scrollTop / secH()); }
 
-    /* ----- 이벤트 ----- */
+   
     scroller.addEventListener('scroll', schedule, { passive: true });
 
     scroller.addEventListener('click', function (e) {
@@ -204,7 +195,7 @@
     if (window.ResizeObserver) { ro = new ResizeObserver(onResize); ro.observe(scroller); }
     else window.addEventListener('resize', onResize);
 
-    /* ----- 시작 위치 ----- */
+   
     var start = -1;
     for (var k = 0; k < N; k++) if (series[k].id === opts.startId) start = k;
     var fromHash = indexOfHash();
