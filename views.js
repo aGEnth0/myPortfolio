@@ -1,23 +1,16 @@
-/* ==========================================================================
-   시리즈 화면 + 사진 상세 화면
-   --------------------------------------------------------------------------
-   · 시리즈 화면: 사진을 열(column)로 배치, lazy 로딩 + 페이드인(깜박임 방지),
-                  휠 스크롤 부드럽게(관성), 화면에 들어올 때 살짝 떠오르는 등장 효과
-   · 사진 상세: 좌우 화살표 / ← → 키 / 터치 스와이프로 이전·다음 사진, 촬영 정보 표시
-   · 이 파일은 app.js 가 불러 쓰며, 보통 수정할 필요가 없습니다.
-   ========================================================================== */
+
 (function () {
   'use strict';
 
   var MUTED = '#9B968B';
   var SEP = '#C9C4B8';
-  var PLACEHOLDER = '#1C1B16';   // 사진이 뜨기 전 자리 색 (어두운 테마에 맞춤)
+  var PLACEHOLDER = '#1C1B16';   
 
   /* ---------- 공통 ---------- */
   var mqReduce = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
   function reduced() { return !!(mqReduce && mqReduce.matches); }
 
-  // 사진 가로세로 비율을 기억해 두면 다음 방문부터 자리를 정확히 잡아 화면이 밀리지 않습니다.
+  
   var ratios = {};
   try { ratios = JSON.parse(localStorage.getItem('rs_ratios') || '{}') || {}; } catch (e) { ratios = {}; }
   var saveTimer = 0;
@@ -39,14 +32,14 @@
   function titleOf(s) { return s.name + (s.year ? ' ' + s.year : ''); }
 
   var CSS = [
-    // 시리즈 이름(경로)은 헤더 로고처럼 스크롤해도 제자리에 머뭅니다 (sticky). 글자 밑의 사진을 누를 수 있도록 글자 영역만 클릭을 받습니다.
+    
     '.pv-title{position:sticky;top:var(--pa-top,100px);z-index:5;width:max-content;max-width:100%;pointer-events:none;display:flex;align-items:baseline;gap:12px;margin-bottom:clamp(26px,3.2vw,44px);font-size:clamp(20px,2.6vw,28px);font-weight:600;letter-spacing:-0.01em;line-height:1;flex-wrap:wrap;}',
     '.pv-title .pv-name{white-space:nowrap;}',
     '.pv-crumb{pointer-events:auto;background:none;border:none;padding:10px 12px;margin:-10px -12px;cursor:pointer;font-family:inherit;font-size:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit;color:' + MUTED + ';white-space:nowrap;}',
     '.pv-crumb:hover,.pv-crumb:focus-visible{color:inherit;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:7px;}',
     '.pv-crumb:focus-visible,.pv-arrow:focus-visible,.pv-tile:focus-visible{outline:2px solid currentColor;outline-offset:3px;}',
     '.pv-sep{color:' + SEP + ';font-weight:400;}',
-    /* 시리즈: 열 배치 */
+   
     '.pv-grid{display:flex;align-items:flex-start;gap:0 var(--pv-gap);}',
     '.pv-col{flex:1 1 0;min-width:0;}',
     '.pv-tile{position:relative;display:block;margin:0 0 var(--pv-gap);background:' + PLACEHOLDER + ';cursor:pointer;color:inherit;overflow:hidden;opacity:0;transform:translateY(22px);}',
@@ -56,7 +49,7 @@
     '.pv-tile.pv-bad{display:none;}',
     '.pv-reduce .pv-tile{opacity:1;transform:none;transition:none;}',
     '.pv-reduce .pv-tile img{transition:none;}',
-    /* 사진 상세 */
+   
     '.pv-wrap{display:flex;gap:clamp(24px,4vw,60px);align-items:flex-start;flex-wrap:wrap;}',
     '.pv-stage{position:relative;flex:1 1 440px;min-width:0;display:flex;justify-content:center;touch-action:pan-y;}',
     '.pv-imgbox{display:flex;justify-content:center;align-items:center;min-width:0;max-width:100%;}',
@@ -65,7 +58,7 @@
     '.pv-reduce .pv-img{transition:none;}',
     '.pv-side{flex:0 0 clamp(220px,26vw,300px);width:100%;max-width:340px;display:flex;flex-direction:column;}',
     '.pv-meta{min-height:352px;}',
-    /* 좌우 버튼 + 진행 위치: 사진 크기와 상관없이 항상 같은 자리 */
+    
     '.pv-nav{margin-top:26px;}',
     '.pv-navbtns{display:flex;justify-content:space-between;align-items:center;}',
     '.pv-arrow{width:44px;height:44px;border:none;background:none;color:inherit;display:flex;align-items:center;padding:0;margin:0;cursor:pointer;opacity:.9;transition:opacity .2s ease;}',
@@ -103,9 +96,7 @@
     document.head.appendChild(st);
   }
 
-  /* ---------- 휠 스크롤 부드럽게 ---------- */
-  // 마우스 휠을 한 칸씩 끊기지 않고 관성 있게 이어지도록 보정합니다.
-  // 키보드, 터치, 스크롤바 드래그는 브라우저 기본 동작을 그대로 씁니다.
+
   function smoothWheel() {
     var target = window.pageYOffset, cur = target, raf = 0, expected = null;
     function max() { return Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
@@ -127,7 +118,7 @@
       if (!raf) raf = requestAnimationFrame(tick);
     }
     function onScroll() {
-      // 우리가 만든 스크롤이 아니면(스크롤바, 키보드 등) 위치를 다시 맞춤
+     
       if (expected !== null && Math.abs(window.pageYOffset - expected) <= 2) return;
       if (!raf) { cur = window.pageYOffset; target = cur; }
     }
@@ -140,7 +131,7 @@
     };
   }
 
-  /* ---------- 시리즈 화면 ---------- */
+
   // opts: { series, hrefFor(n), onOpenPhoto(n), scrollY }
   function createSeries(host, opts) {
     injectStyle();
@@ -162,14 +153,14 @@
       var a = el('a', 'pv-tile', { href: opts.hrefFor(i + 1), 'aria-label': titleOf(series) + ' — ' + (i + 1) });
       var r = ratios[p.url];
       a.style.aspectRatio = r ? r : '4 / 5';
-      a._h = 1.25; a._col = -1; a._bad = false;      // 세로/가로 비율 (모르면 4:5 로 가정)
+      a._h = 1.25; a._col = -1; a._bad = false;      
       if (r) { var m = String(r).split('/'), rw = parseFloat(m[0]), rh = parseFloat(m[1]); if (rw && rh) a._h = rh / rw; }
       var img = el('img', null, { alt: p.label, loading: 'lazy', decoding: 'async', draggable: 'false' });
       a._img = img; a._visible = false; a._loaded = false; a._shown = false;
       img.onload = function () {
         if (img.naturalWidth && img.naturalHeight) {
           var rr = img.naturalWidth + ' / ' + img.naturalHeight;
-          a.style.aspectRatio = rr;                 // 실제 비율과 정확히 같아 잘리지 않음
+          a.style.aspectRatio = rr;                 
           a._h = img.naturalHeight / img.naturalWidth;
           rememberRatio(p.url, rr);
         }
@@ -193,7 +184,7 @@
       return a;
     });
 
-    // 사진이 화면에 들어오고 + 로딩이 끝났을 때 등장 효과
+ 
     function maybeShow(a) {
       if (a._shown || !a._visible || !a._loaded) return;
       a._shown = true;
@@ -214,14 +205,13 @@
       tiles.forEach(function (t) { t._visible = true; maybeShow(t); });
     }
 
-    // 열 개수: 열 너비가 300px 이상이 되도록 최대 3열 (기존 규칙과 동일)
+    
     function gapPx() { return clamp(0.024 * window.innerWidth, 20, 38); }
     function colCount() {
       var g = gapPx();
       return clamp(Math.floor((root.clientWidth + g) / (300 + g)), 1, 3);
     }
-    // 사진은 번호 순서대로, 지금 가장 짧은 열에 차례로 놓습니다. (맨 아래도 열 높이가 고르게 끝남)
-    // 이미 화면에 나타난 사진은 자리를 고정하고, 아직 안 나타난 사진만 로딩 결과(실제 비율)에 맞춰 다시 배치합니다.
+ 
     var colEls = [], assignRaf = 0;
     function build(n) {
       cols = n;
@@ -237,10 +227,10 @@
       if (destroyed || !cols) return;
       var n = cols, g = gapPx();
       var colW = Math.max(100, (root.clientWidth - g * (n - 1)) / n);
-      var gf = g / colW;                       // 사진 사이 간격을 열 너비 기준 비율로 환산
+      var gf = g / colW;                      
       var hs = [], want = [], assigned = [], free = [], c, k, i;
       for (c = 0; c < n; c++) { hs.push(0); want.push([]); }
-      var TAIL = 5;                              // 맨 끝 사진 몇 장은 모든 경우를 따져서 열 높이가 가장 고르게 끝나도록 배치
+      var TAIL = 5;                            
       for (i = 0; i < tiles.length; i++) {
         var t = tiles[i];
         if (t._shown && t._col >= 0) c = t._col;
@@ -298,7 +288,7 @@
     };
   }
 
-  /* ---------- 사진 상세 화면 ---------- */
+ 
   var ARROW_L = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg>';
   var ARROW_R = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg>';
 
@@ -328,7 +318,7 @@
     box.appendChild(img);
     stage.appendChild(box);
 
-    // 오른쪽(모바일은 아래) 영역: 촬영 정보 + 좌우 버튼/진행 위치. 버튼은 사진 크기와 상관없이 항상 같은 자리에 있습니다.
+   
     var side = el('div', 'pv-side');
     var meta = el('aside', 'pv-meta');
     var nav = el('div', 'pv-nav');
