@@ -25,13 +25,11 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;bg&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#15140f&quot;,&quot;options&quot;:[&quot;#F4F2EC&quot;,&quot;#ECECEA&quot;,&quot;#EDE7DA&quot;,&quot;#15140F&quot;]},&quot;ink&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ede8dd&quot;,&quot;options&quot;:[&quot;#1F1B16&quot;,&quot;#1A1A1A&quot;,&quot;#3A3A38&quot;,&quot;#EDE8DD&quot;]}}">
 class Component extends DCLogic {
-  // 화면 전체(헤더, 메인, 시리즈, 사진 상세, 뒤로가기)는 app.js / home.js / views.js 가 그립니다.
-  // 이 파일(index.html)은 그 앱을 화면에 붙여 주는 얇은 껍데기이며, 보통 수정할 필요가 없습니다.
-  // 시리즈와 사진 정보는 content/series.js 에서만 수정합니다.
+  
   constructor(...args) {
     super(...args);
     this._app = null;
-    // 앱은 React 밖에서 그려지므로, 빈 칸(host)이 화면에 붙고 떨어질 때 만들고 지웁니다.
+   
     this._hostRef = (el) => {
       if (this._app) { try { this._app.destroy(); } catch (e) {} this._app = null; }
       if (el) this.mountApp(el);
